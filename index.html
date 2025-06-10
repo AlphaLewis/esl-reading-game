@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ESL Reading Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f9fafb; margin: 0; padding: 2rem; }
+    h1 { color: #111827; }
+    #board { display: flex; flex-wrap: wrap; max-width: 400px; margin: 2rem auto; gap: 10px; }
+    .tile { width: 60px; height: 60px; border-radius: 10px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    #question-box { margin-top: 2rem; padding: 1rem; background: white; border: 1px solid #d1d5db; border-radius: 8px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    button { margin-top: 1rem; padding: 10px 20px; background-color: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <h1>ESL Reading Game</h1>
+  <div id="board"></div>
+  <div id="question-box" style="display: none;">
+    <div id="question"></div>
+    <div id="answers"></div>
+    <div id="feedback" style="margin-top: 1rem;"></div>
+    <button onclick="nextTurn()">Next Turn</button>
+  </div>
+  <button onclick="rollDice()">Roll Dice</button>
+  <p id="result"></p>
+
+  <script>
+    const boardSize = 20;
+    let position = 0;
+
+    const questions = [
+      {
+        q: "What was Kakenya's goal?",
+        a: ["To become a doctor", "To become a teacher", "To become a singer", "To become a chef"],
+        c: 1
+      },
+      {
+        q: "What is the main topic of 'The Super Bowl of Advertising'?",
+        a: ["Football rules", "Ad costs and impacts", "Stadium design", "Player stats"],
+        c: 1
+      },
+      {
+        q: "What problem does the O-Pod solve?",
+        a: ["High transportation costs", "Lack of affordable housing", "Need for luxury homes", "Weatherproofing"],
+        c: 1
+      }
+    ];
+
+    function createBoard() {
+      const board = document.getElementById("board");
+      for (let i = 0; i < boardSize; i++) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.id = "tile-" + i;
+        tile.textContent = i + 1;
+        board.appendChild(tile);
+      }
+      updateBoard();
+    }
+
+    function updateBoard() {
+      for (let i = 0; i < boardSize; i++) {
+        document.getElementById("tile-" + i).style.backgroundColor = "#e5e7eb";
+      }
+      document.getElementById("tile-" + position).style.backgroundColor = "#facc15";
+    }
+
+    function rollDice() {
+      const roll = Math.floor(Math.random() * 4) + 1;
+      position = Math.min(position + roll, boardSize - 1);
+      document.getElementById("result").textContent = "You rolled a " + roll + "!";
+      updateBoard();
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[Math.floor(Math.random() * questions.length)];
+      const questionBox = document.getElementById("question-box");
+      questionBox.style.display = "block";
+      document.getElementById("question").textContent = q.q;
+      const answersDiv = document.getElementById("answers");
+      answersDiv.innerHTML = "";
+      q.a.forEach((option, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.onclick = () => {
+          document.getElementById("feedback").textContent = idx === q.c ? "Correct!" : "Try again!";
+        };
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    function nextTurn() {
+      document.getElementById("question-box").style.display = "none";
+      document.getElementById("feedback").textContent = "";
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
